@@ -5,8 +5,44 @@ body {
 }
 
 .container {
-    background: white; padding: 20px; border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1); text-align: center; width: 320px;
+    background: white; 
+    padding: 45px 20px 20px 20px; /* 顶部加大了 padding，给计时器留出专属空间 */
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
+    text-align: center; 
+    width: 320px;
+    position: relative; /* 关键：让内部的绝对定位以 container 为基准 */
+}
+
+/* 悬浮计时器样式 */
+.timer-section {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-start {
+    background-color: #FF9800;
+    color: white;
+    padding: 5px 12px;
+    border: none;
+    border-radius: 4px;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.btn-start:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+#timerDisplay {
+    font-size: 13px;
+    font-weight: bold;
+    color: #888;
 }
 
 /* 选项卡样式 */
@@ -28,7 +64,7 @@ h2 { font-size: 20px; margin: 10px 0; }
     background-color: #fafafa; transition: background-color 0.2s;
 }
 
-/* 掩码样式：Emoji 用绿色勾号，数字 PIN 用黑色圆点 */
+/* 掩码样式 */
 .slot.masked-emoji { background-color: #4CAF50; color: white; border-color: #4CAF50; font-size: 28px; }
 .slot.masked-pin { color: #333; font-size: 40px; }
 
@@ -39,7 +75,7 @@ h2 { font-size: 20px; margin: 10px 0; }
 #emojiKeyboard { display: grid; grid-template-columns: repeat(4, 1fr); }
 
 /* 数字键盘 3x4 */
-.numeric-keyboard { grid-template-columns: repeat(3, 1fr); }
+.numeric-keyboard { display: grid; grid-template-columns: repeat(3, 1fr); }
 
 .key-btn {
     background: #fff; border: 1px solid #ddd; border-radius: 8px;

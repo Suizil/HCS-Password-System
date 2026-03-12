@@ -3,24 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>身份验证研究原型系统</title>
+    <title>回忆与验证阶段 - EmojiAuth</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* 针对验证页面的微调样式 */
+        .user-input-section { margin-bottom: 15px; text-align: left; }
+        .user-input-section input { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        .attempts-display { color: #f44336; font-weight: bold; font-size: 14px; margin-bottom: 10px; }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <div class="timer-section">
-            <button id="startTimerBtn" class="btn-start" onclick="startTimer()">▶ 开始</button>
-            <span id="timerDisplay">0.00s</span>
+    <div class="container" style="padding-top: 20px;">
+        <h2>密码验证阶段</h2>
+        
+        <div class="user-input-section">
+            <label for="userIdInput" style="font-size: 13px; color: #555;">请输入您的测试 ID (纯数字，如 1, 2)：</label>
+            <input type="number" id="userIdInput" placeholder="例如: 1">
         </div>
-
         <div class="tabs">
             <button id="tabEmoji" class="tab active" onclick="switchTab('Emoji_Password')">表情密码</button>
             <button id="tabNumeric" class="tab" onclick="switchTab('Numeric_PIN')">数字 PIN</button>
         </div>
 
-        <h2 id="titleText">请选择您的表情密码</h2>
-        <p class="instruction">请按顺序选择 4 位密码。输入 0.5 秒后将被安全隐藏。</p>
+        <p class="instruction">请回忆并输入您之前设置的密码。</p>
         
+        <div id="attemptsDisplay" class="attempts-display" style="display: none;">当前尝试次数: 1</div>
+
         <div class="password-display" id="passwordDisplay">
             <div class="slot" id="slot-0"></div>
             <div class="slot" id="slot-1"></div>
@@ -35,21 +43,20 @@
         </div>
 
         <div class="keyboard" id="emojiKeyboard"></div>
-
         <div class="keyboard numeric-keyboard" id="numericKeyboard" style="display: none;"></div>
 
         <div class="controls">
-            <button class="btn btn-clear" id="clearBtn" onclick="clearPassword()">清除 (Clear)</button>
-            <button class="btn btn-submit" id="submitBtn" onclick="submitPassword()" disabled>提交 (Submit)</button>
+            <button class="btn btn-clear" id="clearBtn" onclick="clearPassword()">清除</button>
+            <button class="btn btn-submit" id="submitBtn" onclick="verifyPassword()" disabled>验证 (Verify)</button>
         </div>
         
         <div style="margin-top: 20px; text-align: center; font-size: 13px;">
-            <a href="verify.html" style="color: #2196F3; text-decoration: none; font-weight: bold;">
-                前往密码验证阶段 (Go to Verify) ➔
+            <a href="index.html" style="color: #888; text-decoration: none;">
+                ⬅ 返回密码注册阶段 (Back to Enroll)
             </a>
         </div>
     </div>
 
-    <script src="app.js"></script>
+    <script src="verify.js"></script>
 </body>
 </html>

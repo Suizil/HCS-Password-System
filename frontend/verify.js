@@ -7,64 +7,14 @@ const numbers = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', ''];
 let currentPassword = [];
 const maxLen = 4;
 let currentCondition = "Emoji_Password";
-const userId = "user_" + Math.random().toString(36).substr(2, 9);
 
-// --- 计时器相关变量 ---
-let startTime = null;
-let finalTime = 0;
-let isTiming = false;
-let timerInterval = null;
+// --- 验证专属：尝试次数计数器 ---
+let currentAttempts = 1; 
 
 document.addEventListener("DOMContentLoaded", () => {
     renderEmojiKeyboard();
     renderNumericKeyboard();
-    setKeyboardEnabled(false); // 初始状态禁用键盘
 });
-
-// --- 新增：计时控制功能 ---
-function startTimer() {
-    isTiming = true;
-    startTime = performance.now(); // 获取高精度时间
-    
-    document.getElementById("startTimerBtn").disabled = true;
-    setKeyboardEnabled(true); // 解锁键盘
-    
-    // 实时更新UI时间显示
-    timerInterval = setInterval(() => {
-        const elapsed = (performance.now() - startTime) / 1000;
-        document.getElementById("timerDisplay").innerText = elapsed.toFixed(2) + " 秒";
-    }, 50);
-}
-
-function stopTimer() {
-    if (!isTiming) return;
-    isTiming = false;
-    clearInterval(timerInterval);
-    finalTime = (performance.now() - startTime) / 1000;
-    document.getElementById("timerDisplay").innerText = finalTime.toFixed(2) + " 秒 (已完成)";
-    setKeyboardEnabled(false); // 输入完成，重新锁定键盘
-}
-
-function resetTimer() {
-    isTiming = false;
-    clearInterval(timerInterval);
-    startTime = null;
-    finalTime = 0;
-    document.getElementById("timerDisplay").innerText = "0.00 秒";
-    document.getElementById("startTimerBtn").disabled = false;
-    setKeyboardEnabled(false);
-}
-
-// 辅助函数：统一启用/禁用键盘按钮
-function setKeyboardEnabled(enabled) {
-    const btns = document.querySelectorAll('.key-btn:not(.empty)');
-    btns.forEach(btn => {
-        btn.disabled = !enabled;
-        btn.style.opacity = enabled ? "1" : "0.5";
-        btn.style.cursor = enabled ? "pointer" : "not-allowed";
-    });
-}
-// ------------------------
 
 // --- 新增：随机化控制状态 ---
 let isRandomKeyboard = false;
@@ -152,7 +102,7 @@ function renderNumericKeyboard() {
 }
 
 function handleInput(value) {
-    if (currentPassword.length >= maxLen || !isTiming) return;
+    if (currentPassword.length >= maxLen) return;
 
     const currentIndex = currentPassword.length;
     currentPassword.push(value);
@@ -173,25 +123,21 @@ function handleInput(value) {
         }
     }, 500);
 
-    // 如果输入到达 4 位，停止计时
-    if (currentPassword.length === maxLen) {
-        stopTimer();
-    }
     checkSubmitStatus();
 }
 
 function switchTab(condition) {
     currentCondition = condition;
     clearPassword();
-    resetTimer(); // 切换键盘时重置计时器
+    // 切换组别时，重置尝试次数
+    currentAttempts = 1;
+    updateAttemptsDisplay();
 
     document.getElementById("tabEmoji").classList.toggle("active", condition === "Emoji_Password");
     document.getElementById("tabNumeric").classList.toggle("active", condition === "Numeric_PIN");
     
     document.getElementById("emojiKeyboard").style.display = condition === "Emoji_Password" ? "grid" : "none";
     document.getElementById("numericKeyboard").style.display = condition === "Numeric_PIN" ? "grid" : "none";
-    
-    document.getElementById("titleText").innerText = condition === "Emoji_Password" ? "请选择您的表情密码" : "请输入您的数字 PIN";
 }
 
 function clearPassword() {
@@ -201,44 +147,63 @@ function clearPassword() {
         slot.innerText = "";
         slot.className = "slot"; 
     }
-    if (isRandomKeyboard) {
-        currentCondition === "Emoji_Password" ? renderEmojiKeyboard() : renderNumericKeyboard();
-    }
-    
-    if (typeof resetTimer === 'function') resetTimer(); // app.js 的计时器重置
     checkSubmitStatus();
 }
+
 function checkSubmitStatus() {
     document.getElementById("submitBtn").disabled = currentPassword.length !== maxLen;
 }
 
-async function submitPassword() {
+function updateAttemptsDisplay() {
+    const display = document.getElementById("attemptsDisplay");
+    if (currentAttempts > 1) {
+        display.style.display = "block";
+        display.innerText = `当前为第 ${currentAttempts} 次尝试`;
+    } else {
+        display.style.display = "none";
+    }
+}
+
+// --- 核心验证逻辑 ---
+async function verifyPassword() {
     if (currentPassword.length !== maxLen) return;
+    const inputId = document.getElementById("userIdInput").value.trim();
+    if (!inputId || isNaN(inputId)) {
+        alert("请输入正确的数字 ID！");
+        return;
+    }
 
     const passwordData = currentCondition === "Emoji_Password" 
         ? currentPassword.join(",") 
         : currentPassword.join("");
 
     const payload = {
-        user_id: userId,
+        record_id: parseInt(inputId), 
         condition: currentCondition,
         password_data: passwordData,
-        selection_time: parseFloat(finalTime.toFixed(3)) // 附带精确到毫秒的时间
+        attempts: currentAttempts
     };
 
     try {
-        const response = await fetch("http://127.0.0.1:8000/api/save_password", {
+        const response = await fetch("http://127.0.0.1:8000/api/verify_password", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload)
         });
 
         const result = await response.json();
+        
         if (response.ok) {
-            alert(`提交成功！\n\n【重要】请记住您的测试 ID：${result.record_id}\n\n用时: ${payload.selection_time} 秒`);
-            clearPassword();
+            // 验证成功
+            alert(`✅ ${result.message}`);
+            // 成功后可重定向到感谢页面，这里仅作刷新处理
+            window.location.reload();
         } else {
-            alert("提交失败：" + result.detail);
+            // 验证失败 (401密码错误)
+            alert(`❌ ${result.detail}`);
+            currentAttempts++; // 尝试次数 +1
+            updateAttemptsDisplay(); // 更新 UI 显示
+            clearPassword(); // 清空密码槽让用户重试
         }
     } catch (error) {
         console.error("网络错误:", error);
