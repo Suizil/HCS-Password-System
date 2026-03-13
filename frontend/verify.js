@@ -210,3 +210,7 @@ async function verifyPassword() {
         alert("网络请求失败，请检查后端 API 服务。");
     }
 }
+function exportData() {
+    // 直接让浏览器访问导出接口，浏览器会自动识别并触发文件下载
+    window.location.href = "http://127.0.0.1:8000/api/export_data";
+}

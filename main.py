@@ -5,6 +5,9 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session
 from datetime import datetime
 from fastapi.middleware.cors import CORSMiddleware
+import csv
+import io
+from fastapi.responses import StreamingResponse
 
 # ==========================================
 # 1. 数据库配置 (SQLAlchemy + SQLite)
@@ -127,3 +130,47 @@ def verify_password(payload: VerifySubmit, db: Session = Depends(get_db)):
         return {"status": "success", "message": f"验证成功！总共尝试了 {payload.attempts} 次"}
     else:
         raise HTTPException(status_code=401, detail="密码错误，请重试")
+    
+    @app.get("/api/export_data")
+def export_data(db: Session = Depends(get_db)):
+    """
+    将数据库中的所有实验记录导出为 CSV 文件格式
+    """
+    # 查询所有记录
+    records = db.query(PasswordRecord).all()
+    
+    # 在内存中创建 CSV
+    stream = io.StringIO()
+    csv_writer = csv.writer(stream)
+    
+    # 写入表头 (Header)
+    csv_writer.writerow([
+        "database ID (record_id)", 
+        "User ID (user_id)", 
+        "Experiment Condition (condition)", 
+        "Set Password (password_data)", 
+        "Selection Time (selection_time)", 
+        "Verification Attempts (verification_attempts)", 
+        "Creation Time (created_at)"
+    ])
+    
+    # 写入数据行
+    for r in records:
+        csv_writer.writerow([
+            r.id, 
+            r.user_id, 
+            r.condition, 
+            r.password_data, 
+            r.selection_time, 
+            r.verification_attempts, 
+            r.created_at.strftime("%Y-%m-%d %H:%M:%S") if r.created_at else ""
+        ])
+    
+    # 将内存中的字符串流转换为响应并强制浏览器下载
+    response = StreamingResponse(iter([stream.getvalue()]), media_type="text/csv")
+    
+    # 设置下载的文件名 (带上当前时间戳)
+    current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
+    response.headers["Content-Disposition"] = f"attachment; filename=study_data_export_{current_time}.csv"
+    
+    return response
