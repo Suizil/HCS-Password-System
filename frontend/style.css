@@ -1,27 +1,32 @@
 body {
     font-family: Arial, sans-serif;
-    display: flex; justify-content: center; align-items: center;
-    height: 100vh; background-color: #f4f4f9; margin: 0;
+    display: flex; 
+    justify-content: center; 
+    min-height: 100vh; 
+    background-color: #f4f4f9; 
+    margin: 0;
+    padding: 30px 0; 
+    box-sizing: border-box;
 }
 
 .container {
     background: white; 
-    padding: 45px 20px 20px 20px; /* 顶部加大了 padding，给计时器留出专属空间 */
+    padding: 20px; 
     border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
     text-align: center; 
-    width: 320px;
-    position: relative; /* 关键：让内部的绝对定位以 container 为基准 */
+    width: 380px; 
+    max-width: 95%; 
+    margin: auto; 
 }
 
-/* 悬浮计时器样式 */
+
 .timer-section {
-    position: absolute;
-    top: 15px;
-    right: 15px;
     display: flex;
+    justify-content: flex-end; 
     align-items: center;
     gap: 8px;
+    margin-bottom: 15px;
 }
 
 .btn-start {

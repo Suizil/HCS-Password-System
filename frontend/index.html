@@ -1,25 +1,25 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>身份验证研究原型系统</title>
+    <title>Authentication Study Prototype</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
         <div class="timer-section">
-            <button id="startTimerBtn" class="btn-start" onclick="startTimer()">▶ 开始</button>
+            <button id="startTimerBtn" class="btn-start" onclick="startTimer()">▶ Start</button>
             <span id="timerDisplay">0.00s</span>
         </div>
 
         <div class="tabs">
-            <button id="tabEmoji" class="tab active" onclick="switchTab('Emoji_Password')">表情密码</button>
-            <button id="tabNumeric" class="tab" onclick="switchTab('Numeric_PIN')">数字 PIN</button>
+            <button id="tabEmoji" class="tab active" onclick="switchTab('Emoji_Password')">Emoji Password</button>
+            <button id="tabNumeric" class="tab" onclick="switchTab('Numeric_PIN')">Numeric PIN</button>
         </div>
 
-        <h2 id="titleText">请选择您的表情密码</h2>
-        <p class="instruction">请按顺序选择 4 位密码。输入 0.5 秒后将被安全隐藏。</p>
+        <h2 id="titleText">Select your Emoji Password</h2>
+        <p class="instruction">Select a 4-character password. Input will be masked after 0.5s.</p>
         
         <div class="password-display" id="passwordDisplay">
             <div class="slot" id="slot-0"></div>
@@ -27,25 +27,25 @@
             <div class="slot" id="slot-2"></div>
             <div class="slot" id="slot-3"></div>
         </div>
-        <div class="toggle-section" style="margin-bottom: 10px; text-align: right; font-size: 13px; color: #666;">
-            <label style="cursor: pointer;">
-                <input type="checkbox" id="randomKeyboardToggle" onchange="toggleRandomKeyboard()">
-                🔀 每次重置时打乱键盘布局
+        
+        <div class="toggle-section" style="margin-bottom: 10px; display: flex; justify-content: flex-end; font-size: 13px; color: #666; white-space: nowrap;">
+            <label style="cursor: pointer; display: flex; align-items: center; gap: 5px;">
+                <input type="checkbox" id="randomKeyboardToggle" onchange="toggleRandomKeyboard()" style="margin: 0;">
+                🔀 Randomize keyboard layout on every reset
             </label>
         </div>
 
         <div class="keyboard" id="emojiKeyboard"></div>
-
         <div class="keyboard numeric-keyboard" id="numericKeyboard" style="display: none;"></div>
 
         <div class="controls">
-            <button class="btn btn-clear" id="clearBtn" onclick="clearPassword()">清除 (Clear)</button>
-            <button class="btn btn-submit" id="submitBtn" onclick="submitPassword()" disabled>提交 (Submit)</button>
+            <button class="btn btn-clear" id="clearBtn" onclick="clearPassword()">Clear</button>
+            <button class="btn btn-submit" id="submitBtn" onclick="submitPassword()" disabled>Submit</button>
         </div>
         
         <div style="margin-top: 20px; text-align: center; font-size: 13px;">
             <a href="verify.html" style="color: #2196F3; text-decoration: none; font-weight: bold;">
-                前往密码验证阶段 (Go to Verify) ➔
+                Go to Verification Phase ➔
             </a>
         </div>
     </div>

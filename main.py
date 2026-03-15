@@ -82,7 +82,7 @@ class VerifySubmit(BaseModel):
 
 @app.get("/")
 def read_root():
-    return {"message": "欢迎来到身份验证研究后端 API 服务已正常运行！"}
+    return {"message": "Welcome to the EmojiAuth Study API! Please use the /api endpoints to submit and verify passwords."}
 
 @app.post("/api/save_password")
 def save_password(payload: PasswordSubmit, db: Session = Depends(get_db)):
@@ -90,7 +90,7 @@ def save_password(payload: PasswordSubmit, db: Session = Depends(get_db)):
     接收前端发来的注册密码和耗时数据，并存入数据库。
     """
     if not payload.password_data:
-        raise HTTPException(status_code=400, detail="密码数据不能为空")
+        raise HTTPException(status_code=400, detail="Password data cannot be empty")
     
     # 创建新记录并存入 SQLite
     new_record = PasswordRecord(
@@ -105,7 +105,7 @@ def save_password(payload: PasswordSubmit, db: Session = Depends(get_db)):
     
     return {
         "status": "success", 
-        "message": "密码与时间已成功记录！", 
+        "message": "Password and time have been successfully recorded!", 
         "record_id": new_record.id
     }
 
@@ -121,17 +121,18 @@ def verify_password(payload: VerifySubmit, db: Session = Depends(get_db)):
     ).first()
 
     if not record:
-        raise HTTPException(status_code=404, detail="未找到该数字 ID 的记录，请检查输入是否正确")
+        raise HTTPException(status_code=404, detail="Record not found for the given ID. Please check your input.")
 
     # 比对密码
     if record.password_data == payload.password_data:
         record.verification_attempts = payload.attempts
         db.commit()
-        return {"status": "success", "message": f"验证成功！总共尝试了 {payload.attempts} 次"}
+        return {"status": "success", "message": f"Verification successful! Total attempts: {payload.attempts}"}
     else:
-        raise HTTPException(status_code=401, detail="密码错误，请重试")
-    
-    @app.get("/api/export_data")
+        raise HTTPException(status_code=401, detail="Incorrect password, please try again.")
+
+
+@app.get("/api/export_data")
 def export_data(db: Session = Depends(get_db)):
     """
     将数据库中的所有实验记录导出为 CSV 文件格式

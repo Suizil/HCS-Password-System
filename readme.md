@@ -1,18 +1,21 @@
-代码原型说明
+Code Prototype Explanation
 
-操作步骤：
-1.需要FastAPI、Uvicorn以及 SQLAlchemy。安装指令：pip install fastapi uvicorn sqlalchemy pydantic
+Operation Steps:
 
-2.启动服务器需要要在终端输入：uvicorn main:app --reload
+1. Requires FastAPI, Uvicorn, and SQLAlchemy. Installation command: `pip install fastapi uvicorn sqlalchemy pydantic`
 
-3.点击http://127.0.0.1:8000，页面上显示"message": "欢迎来到身份验证研究后端 API 服务已正常运行！"表明后端启动成功。
+2. To start the server, enter the following in the terminal: `uvicorn main:app --reload`
 
-4.启动网页前端需要打开并运行index.html和verify.html文件，现在只需要启动任意一个文件即可。
+3. Click http://127.0.0.1:8000. The page will display "message": "Welcome to the authentication research backend API service is running normally!", indicating that the backend has started successfully.
 
-5.进入index网页前端后需要选择表情密码输入或pin数字密码输入，开始输入需要点击开始按钮才能输入，当输入结束点击提交自动记录输入时间。如果需要打乱键盘分布需要勾选每次重置时打乱键盘布局选项。
+4. To start the web frontend, open and run the `index.html` and `verify.html` files. You only need to start either one.
 
-6.当输入密码完成后，点击前往密码验证阶段 (Go to Verify) ➔链接可以直接进入验证页面verify.html。
+5. After entering the `index.html` web frontend, you need to choose between emoji password input or PIN numeric password input. Click the "Start" button to begin inputting. Click "Submit" to automatically record the input time. If you need to shuffle the keyboard layout, check the "Shuffle keyboard layout on each reset" option.
 
-7.验证页面需要输入被测试者的测试 ID，ID将会在提交输入密码时显示出来。然后就需要被测试者回忆并输入之前设置的密码，输入次数会被记录下来，直至输入正确。
+6. After entering your password, click "Go to Verify" ➔ This link will directly take you to the verification page `verify.html`.
 
-8.完成验证后在终端输入ctrl+c可以结束服务器运行，同时被测试者的ID、密码和输入次数等数据将会记录在passwords_study数据库中。
+7. The verification page requires the test subject's test ID, which will be displayed when submitting the password. The test subject then needs to recall and re-enter the previously set password. The number of attempts will be recorded until the correct password is entered.
+
+8. Clicking the 📊 Export All Experiment Data (CSV) button will export the database data to a CSV file.
+
+9. After completing the verification, pressing Ctrl+C in the terminal will terminate the server. The test subject's ID, password, and number of attempts will be recorded in the passwords_study database.

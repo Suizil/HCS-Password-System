@@ -158,7 +158,7 @@ function updateAttemptsDisplay() {
     const display = document.getElementById("attemptsDisplay");
     if (currentAttempts > 1) {
         display.style.display = "block";
-        display.innerText = `当前为第 ${currentAttempts} 次尝试`;
+        display.innerText = `Attempt: ${currentAttempts}`;
     } else {
         display.style.display = "none";
     }
@@ -169,7 +169,7 @@ async function verifyPassword() {
     if (currentPassword.length !== maxLen) return;
     const inputId = document.getElementById("userIdInput").value.trim();
     if (!inputId || isNaN(inputId)) {
-        alert("请输入正确的数字 ID！");
+        alert("Please enter a valid numeric ID!");
         return;
     }
 
@@ -194,20 +194,17 @@ async function verifyPassword() {
         const result = await response.json();
         
         if (response.ok) {
-            // 验证成功
             alert(`✅ ${result.message}`);
-            // 成功后可重定向到感谢页面，这里仅作刷新处理
             window.location.reload();
         } else {
-            // 验证失败 (401密码错误)
             alert(`❌ ${result.detail}`);
-            currentAttempts++; // 尝试次数 +1
-            updateAttemptsDisplay(); // 更新 UI 显示
-            clearPassword(); // 清空密码槽让用户重试
+            currentAttempts++; 
+            updateAttemptsDisplay(); 
+            clearPassword(); 
         }
     } catch (error) {
-        console.error("网络错误:", error);
-        alert("网络请求失败，请检查后端 API 服务。");
+        console.error("Network Error:", error);
+        alert("Network request failed. Please check the backend API service.");
     }
 }
 function exportData() {

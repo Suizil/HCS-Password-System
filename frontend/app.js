@@ -191,7 +191,7 @@ function switchTab(condition) {
     document.getElementById("emojiKeyboard").style.display = condition === "Emoji_Password" ? "grid" : "none";
     document.getElementById("numericKeyboard").style.display = condition === "Numeric_PIN" ? "grid" : "none";
     
-    document.getElementById("titleText").innerText = condition === "Emoji_Password" ? "请选择您的表情密码" : "请输入您的数字 PIN";
+    document.getElementById("titleText").innerText = condition === "Emoji_Password" ? "Select your Emoji Password" : "Enter your Numeric PIN";
 }
 
 function clearPassword() {
@@ -235,13 +235,13 @@ async function submitPassword() {
 
         const result = await response.json();
         if (response.ok) {
-            alert(`提交成功！\n\n【重要】请记住您的测试 ID：${result.record_id}\n\n用时: ${payload.selection_time} 秒`);
+            alert(`Submit Successful!\n\n[IMPORTANT] Please remember your Study ID: ${result.record_id}\n\nTime: ${payload.selection_time} s`);
             clearPassword();
         } else {
-            alert("提交失败：" + result.detail);
+            alert("Submit Failed: " + result.detail);
         }
     } catch (error) {
-        console.error("网络错误:", error);
-        alert("网络请求失败，请检查后端 API 服务。");
+        console.error("Network Error:", error);
+        alert("Network request failed, please check the backend API service.");
     }
 }
