@@ -10,18 +10,18 @@ import io
 from fastapi.responses import StreamingResponse
 
 # ==========================================
-# 1. 数据库配置 (SQLAlchemy + SQLite)
+# 1. Database Configuration (SQLAlchemy + SQLite)
 # ==========================================
 SQLALCHEMY_DATABASE_URL = "sqlite:///./passwords_study.db"
 
-# 创建数据库引擎
+# Create a database engine
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
 )
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
-# 定义数据库表结构模型
+# Define database table structure model
 class PasswordRecord(Base):
     __tablename__ = "password_records"
 
@@ -33,25 +33,25 @@ class PasswordRecord(Base):
     verification_attempts = Column(Integer, default=None) # 记录回忆阶段成功验证所需的尝试次数
     created_at = Column(DateTime, default=datetime.utcnow) # 记录创建时间
 
-# 在本地创建数据库和表
+# Create databases and tables locally.
 Base.metadata.create_all(bind=engine)
 
 
 # ==========================================
-# 2. FastAPI 应用初始化与 CORS 配置
+# 2. FastAPI Application Initialization and CORS Configuration
 # ==========================================
 app = FastAPI(title="EmojiAuth Study API")
 
-# 允许跨域请求 (CORS) - 解决前端直接打开 HTML 文件请求后端被拦截的问题
+# Allow Cross-Origin Requests (CORS) - Solve the problem of the backend blocking requests when the frontend directly opens an HTML file.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # 允许所有来源（仅限本地原型测试时使用）
+    allow_origins=["*"], 
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# 获取数据库会话的依赖项
+# Dependencies for obtaining database session
 def get_db():
     db = SessionLocal()
     try:
@@ -61,7 +61,7 @@ def get_db():
 
 
 # ==========================================
-# 3. Pydantic 数据验证模型 (定义前端传来的 JSON 结构)
+# 3. Pydantic Data Validation Model (Define the JSON structure sent from the front end)
 # ==========================================
 class PasswordSubmit(BaseModel):
     user_id: str
@@ -77,7 +77,7 @@ class VerifySubmit(BaseModel):
 
 
 # ==========================================
-# 4. API 路由接口
+# 4. API Routing Interface
 # ==========================================
 
 @app.get("/")
@@ -87,12 +87,12 @@ def read_root():
 @app.post("/api/save_password")
 def save_password(payload: PasswordSubmit, db: Session = Depends(get_db)):
     """
-    接收前端发来的注册密码和耗时数据，并存入数据库。
+    Receive the registration password and time consumption data sent from the front end and store them in the database.
     """
     if not payload.password_data:
         raise HTTPException(status_code=400, detail="Password data cannot be empty")
     
-    # 创建新记录并存入 SQLite
+    # Create a new record and store it in SQLite
     new_record = PasswordRecord(
         user_id=payload.user_id,
         condition=payload.condition,
@@ -112,9 +112,9 @@ def save_password(payload: PasswordSubmit, db: Session = Depends(get_db)):
 @app.post("/api/verify_password")
 def verify_password(payload: VerifySubmit, db: Session = Depends(get_db)):
     """
-    接收前端发来的验证请求，直接通过数据库的主键 ID 比对密码。
+    Upon receiving a verification request from the front end, the password is directly compared using the primary key ID in the database.
     """
-    # 直接通过数字 ID 和实验组别查找记录
+    # Records can be searched directly by numeric ID and experimental group.
     record = db.query(PasswordRecord).filter(
         PasswordRecord.id == payload.record_id,
         PasswordRecord.condition == payload.condition
@@ -123,7 +123,7 @@ def verify_password(payload: VerifySubmit, db: Session = Depends(get_db)):
     if not record:
         raise HTTPException(status_code=404, detail="Record not found for the given ID. Please check your input.")
 
-    # 比对密码
+    # Compare passwords
     if record.password_data == payload.password_data:
         record.verification_attempts = payload.attempts
         db.commit()
@@ -135,16 +135,16 @@ def verify_password(payload: VerifySubmit, db: Session = Depends(get_db)):
 @app.get("/api/export_data")
 def export_data(db: Session = Depends(get_db)):
     """
-    将数据库中的所有实验记录导出为 CSV 文件格式
+    Export all experimental records from the database as a CSV file.
     """
-    # 查询所有记录
+    # Query all records
     records = db.query(PasswordRecord).all()
     
-    # 在内存中创建 CSV
+    # Create CSV in memory
     stream = io.StringIO()
     csv_writer = csv.writer(stream)
     
-    # 写入表头 (Header)
+    # Write the table header
     csv_writer.writerow([
         "database ID (record_id)", 
         "User ID (user_id)", 
@@ -155,7 +155,7 @@ def export_data(db: Session = Depends(get_db)):
         "Creation Time (created_at)"
     ])
     
-    # 写入数据行
+    # Write data rows
     for r in records:
         csv_writer.writerow([
             r.id, 
@@ -167,10 +167,10 @@ def export_data(db: Session = Depends(get_db)):
             r.created_at.strftime("%Y-%m-%d %H:%M:%S") if r.created_at else ""
         ])
     
-    # 将内存中的字符串流转换为响应并强制浏览器下载
+    # Convert the string stream in memory into a response and force the browser to download it.
     response = StreamingResponse(iter([stream.getvalue()]), media_type="text/csv")
     
-    # 设置下载的文件名 (带上当前时间戳)
+    # Set the filename for download (including the current timestamp)
     current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
     response.headers["Content-Disposition"] = f"attachment; filename=study_data_export_{current_time}.csv"
     
