@@ -50,7 +50,7 @@ body {
     color: #888;
 }
 
-/* 选项卡样式 */
+/* Tab style */
 .tabs { display: flex; margin-bottom: 15px; border-bottom: 2px solid #eee; }
 .tab { 
     flex: 1; padding: 10px; border: none; background: none; 
@@ -61,7 +61,7 @@ body {
 h2 { font-size: 20px; margin: 10px 0; }
 .instruction { font-size: 13px; color: #666; margin-bottom: 20px; }
 
-/* 密码槽位 */
+/* Password slot */
 .password-display { display: flex; justify-content: space-between; margin-bottom: 20px; }
 .slot {
     width: 60px; height: 60px; border: 2px solid #ccc; border-radius: 8px;
@@ -69,17 +69,17 @@ h2 { font-size: 20px; margin: 10px 0; }
     background-color: #fafafa; transition: background-color 0.2s;
 }
 
-/* 掩码样式 */
+/* Mask style */
 .slot.masked-emoji { background-color: #4CAF50; color: white; border-color: #4CAF50; font-size: 28px; }
 .slot.masked-pin { color: #333; font-size: 40px; }
 
-/* 键盘基础样式 */
+/* Basic keyboard styles */
 .keyboard { gap: 10px; margin-bottom: 20px; }
 
-/* Emoji键盘 4x5 */
+/* Emoji keyboard 4x5 */
 #emojiKeyboard { display: grid; grid-template-columns: repeat(4, 1fr); }
 
-/* 数字键盘 3x4 */
+/* Numeric keypad 3x4 */
 .numeric-keyboard { display: grid; grid-template-columns: repeat(3, 1fr); }
 
 .key-btn {
@@ -92,7 +92,7 @@ h2 { font-size: 20px; margin: 10px 0; }
 .key-btn:active { background: #e0e0e0; }
 .key-btn.empty { background: transparent; border: none; cursor: default; }
 
-/* 底部按钮 */
+/* Bottom button */
 .controls { display: flex; justify-content: space-between; }
 .btn { flex: 1; padding: 12px; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; margin: 0 5px; }
 .btn-clear { background-color: #f44336; color: white; }
