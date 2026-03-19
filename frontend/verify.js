@@ -8,7 +8,7 @@ let currentPassword = [];
 const maxLen = 4;
 let currentCondition = "Emoji_Password";
 
-// --- 验证专属：尝试次数计数器 ---
+// --- Verification-Specific: Attempt Count Counter ---
 let currentAttempts = 1; 
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -16,29 +16,29 @@ document.addEventListener("DOMContentLoaded", () => {
     renderNumericKeyboard();
 });
 
-// --- 新增：随机化控制状态 ---
+// --- Randomized control state ---
 let isRandomKeyboard = false;
 
-// 新增：切换开关事件
+// Toggle switch event
 function toggleRandomKeyboard() {
     const toggle = document.getElementById("randomKeyboardToggle");
     isRandomKeyboard = toggle.checked;
     
-    // 切换状态后立即重新渲染当前显示的键盘
+    // Re-render the currently displayed keyboard immediately after switching states.
     if (currentCondition === "Emoji_Password") {
         renderEmojiKeyboard();
     } else {
         renderNumericKeyboard();
     }
     
-    // 如果是在 app.js (注册阶段) 中，需要维持键盘的锁定/解锁状态
-    // 如果是在 verify.js 中，这一行可以保留，因为我们可以在 verify.js 中声明一个空的 setKeyboardEnabled 函数防错，或者简单地加上 typeof 判断
+    // If it's in app.js (registration phase), you need to maintain the keyboard's locked/unlocked state.
+    // If it's in verify.js, this line can be kept, because we can declare an empty setKeyboardEnabled function in verify.js to prevent errors, or simply add a typeof check.
     if (typeof isTiming !== 'undefined') {
         setKeyboardEnabled(isTiming); 
     }
 }
 
-// 新增：数组打乱算法 (Fisher-Yates)
+// Array shuffling algorithm (Fisher-Yates)
 function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -47,12 +47,12 @@ function shuffleArray(array) {
     return array;
 }
 
-// --- 替换：渲染表情键盘 ---
+// --- Replace with: Render emoji keyboard ---
 function renderEmojiKeyboard() {
     const keyboard = document.getElementById("emojiKeyboard");
     keyboard.innerHTML = '';
     
-    // 根据开关状态决定是否打乱
+    // Whether to disrupt depends on the switch status.
     const displayEmojis = isRandomKeyboard ? shuffleArray([...emojis]) : [...emojis];
     
     displayEmojis.forEach(emoji => {
@@ -64,26 +64,26 @@ function renderEmojiKeyboard() {
     });
 }
 
-// --- 替换：渲染数字键盘 ---
+// --- Replace: Render numeric keypad ---
 function renderNumericKeyboard() {
     const keyboard = document.getElementById("numericKeyboard");
     keyboard.innerHTML = '';
     
-    // 标准的 0-9 数组，用于随机打乱
+    // A standard 0-9 array, used for random shuffling
     const digits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
     let layout = [];
     
     if (isRandomKeyboard) {
-        // 如果开启随机，完全打乱 10 个数字
+        // If random selection is enabled, the 10 numbers will be completely shuffled.
         const shuffled = shuffleArray([...digits]);
         layout = [
             shuffled[0], shuffled[1], shuffled[2],
             shuffled[3], shuffled[4], shuffled[5],
             shuffled[6], shuffled[7], shuffled[8],
-            '', shuffled[9], '' // 保持底部两边为空
+            '', shuffled[9], '' // Keep the bottom two sides empty
         ];
     } else {
-        // 如果不开启随机，使用标准的电话拨号盘 3x4 布局
+        // If random dialing is not enabled, use the standard 3x4 telephone dial pad layout.
         layout = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', ''];
     }
     
@@ -129,7 +129,7 @@ function handleInput(value) {
 function switchTab(condition) {
     currentCondition = condition;
     clearPassword();
-    // 切换组别时，重置尝试次数
+    // Reset the number of attempts when switching groups
     currentAttempts = 1;
     updateAttemptsDisplay();
 
@@ -164,7 +164,7 @@ function updateAttemptsDisplay() {
     }
 }
 
-// --- 核心验证逻辑 ---
+// --- Core Verification Logic ---
 async function verifyPassword() {
     if (currentPassword.length !== maxLen) return;
     const inputId = document.getElementById("userIdInput").value.trim();
@@ -208,6 +208,6 @@ async function verifyPassword() {
     }
 }
 function exportData() {
-    // 直接让浏览器访问导出接口，浏览器会自动识别并触发文件下载
+   // Directly allow the browser to access the export interface; the browser will automatically recognize it and trigger file download.
     window.location.href = "http://127.0.0.1:8000/api/export_data";
 }
