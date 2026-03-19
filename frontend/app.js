@@ -9,7 +9,7 @@ const maxLen = 4;
 let currentCondition = "Emoji_Password";
 const userId = "user_" + Math.random().toString(36).substr(2, 9);
 
-// --- 计时器相关变量 ---
+// --- Timer-related variables ---
 let startTime = null;
 let finalTime = 0;
 let isTiming = false;
@@ -18,18 +18,18 @@ let timerInterval = null;
 document.addEventListener("DOMContentLoaded", () => {
     renderEmojiKeyboard();
     renderNumericKeyboard();
-    setKeyboardEnabled(false); // 初始状态禁用键盘
+    setKeyboardEnabled(false); // Disable keyboard in initial state
 });
 
-// --- 新增：计时控制功能 ---
+// --- Timer Control Function ---
 function startTimer() {
     isTiming = true;
-    startTime = performance.now(); // 获取高精度时间
+    startTime = performance.now(); // Get high-precision time
     
     document.getElementById("startTimerBtn").disabled = true;
-    setKeyboardEnabled(true); // 解锁键盘
+    setKeyboardEnabled(true); // Unlock keyboard
     
-    // 实时更新UI时间显示
+    // Real-time UI time display update
     timerInterval = setInterval(() => {
         const elapsed = (performance.now() - startTime) / 1000;
         document.getElementById("timerDisplay").innerText = elapsed.toFixed(2) + " 秒";
@@ -42,7 +42,7 @@ function stopTimer() {
     clearInterval(timerInterval);
     finalTime = (performance.now() - startTime) / 1000;
     document.getElementById("timerDisplay").innerText = finalTime.toFixed(2) + " 秒 (已完成)";
-    setKeyboardEnabled(false); // 输入完成，重新锁定键盘
+    setKeyboardEnabled(false); // Input complete, lock keyboard again
 }
 
 function resetTimer() {
@@ -55,7 +55,7 @@ function resetTimer() {
     setKeyboardEnabled(false);
 }
 
-// 辅助函数：统一启用/禁用键盘按钮
+// Helper function: Enable/disable keyboard buttons uniformly
 function setKeyboardEnabled(enabled) {
     const btns = document.querySelectorAll('.key-btn:not(.empty)');
     btns.forEach(btn => {
@@ -66,29 +66,29 @@ function setKeyboardEnabled(enabled) {
 }
 // ------------------------
 
-// --- 新增：随机化控制状态 ---
+// --- Randomized control state ---
 let isRandomKeyboard = false;
 
-// 新增：切换开关事件
+// Toggle switch event
 function toggleRandomKeyboard() {
     const toggle = document.getElementById("randomKeyboardToggle");
     isRandomKeyboard = toggle.checked;
     
-    // 切换状态后立即重新渲染当前显示的键盘
+    // Re-render the currently displayed keyboard immediately after switching states.
     if (currentCondition === "Emoji_Password") {
         renderEmojiKeyboard();
     } else {
         renderNumericKeyboard();
     }
     
-    // 如果是在 app.js (注册阶段) 中，需要维持键盘的锁定/解锁状态
-    // 如果是在 verify.js 中，这一行可以保留，因为我们可以在 verify.js 中声明一个空的 setKeyboardEnabled 函数防错，或者简单地加上 typeof 判断
+    // If it's in app.js (registration phase), you need to maintain the keyboard's locked/unlocked state.
+    // If it's in verify.js, this line can be kept, because we can declare an empty setKeyboardEnabled function in verify.js to prevent errors, or simply add a typeof check.
     if (typeof isTiming !== 'undefined') {
         setKeyboardEnabled(isTiming); 
     }
 }
 
-// 新增：数组打乱算法 (Fisher-Yates)
+// Array shuffling algorithm (Fisher-Yates)
 function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -97,12 +97,12 @@ function shuffleArray(array) {
     return array;
 }
 
-// --- 替换：渲染表情键盘 ---
+// --- Replace with: Render emoji keyboard ---
 function renderEmojiKeyboard() {
     const keyboard = document.getElementById("emojiKeyboard");
     keyboard.innerHTML = '';
     
-    // 根据开关状态决定是否打乱
+    // Whether to disrupt depends on the switch status.
     const displayEmojis = isRandomKeyboard ? shuffleArray([...emojis]) : [...emojis];
     
     displayEmojis.forEach(emoji => {
@@ -114,26 +114,26 @@ function renderEmojiKeyboard() {
     });
 }
 
-// --- 替换：渲染数字键盘 ---
+// --- Replace: Render numeric keypad ---
 function renderNumericKeyboard() {
     const keyboard = document.getElementById("numericKeyboard");
     keyboard.innerHTML = '';
     
-    // 标准的 0-9 数组，用于随机打乱
+    // A standard 0-9 array, used for random shuffling
     const digits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
     let layout = [];
     
     if (isRandomKeyboard) {
-        // 如果开启随机，完全打乱 10 个数字
+        // If random selection is enabled, the 10 numbers will be completely shuffled.
         const shuffled = shuffleArray([...digits]);
         layout = [
             shuffled[0], shuffled[1], shuffled[2],
             shuffled[3], shuffled[4], shuffled[5],
             shuffled[6], shuffled[7], shuffled[8],
-            '', shuffled[9], '' // 保持底部两边为空
+            '', shuffled[9], '' 
         ];
     } else {
-        // 如果不开启随机，使用标准的电话拨号盘 3x4 布局
+        // If random dialing is not enabled, use the standard 3x4 telephone dial pad layout.
         layout = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', ''];
     }
     
@@ -173,7 +173,7 @@ function handleInput(value) {
         }
     }, 500);
 
-    // 如果输入到达 4 位，停止计时
+    // Stop timing if the input reaches 4 digits.
     if (currentPassword.length === maxLen) {
         stopTimer();
     }
@@ -183,7 +183,7 @@ function handleInput(value) {
 function switchTab(condition) {
     currentCondition = condition;
     clearPassword();
-    resetTimer(); // 切换键盘时重置计时器
+    resetTimer(); // Reset timer when switching keyboards
 
     document.getElementById("tabEmoji").classList.toggle("active", condition === "Emoji_Password");
     document.getElementById("tabNumeric").classList.toggle("active", condition === "Numeric_PIN");
@@ -205,7 +205,7 @@ function clearPassword() {
         currentCondition === "Emoji_Password" ? renderEmojiKeyboard() : renderNumericKeyboard();
     }
     
-    if (typeof resetTimer === 'function') resetTimer(); // app.js 的计时器重置
+    if (typeof resetTimer === 'function') resetTimer(); // Reset the timer in app.js
     checkSubmitStatus();
 }
 function checkSubmitStatus() {
@@ -223,7 +223,7 @@ async function submitPassword() {
         user_id: userId,
         condition: currentCondition,
         password_data: passwordData,
-        selection_time: parseFloat(finalTime.toFixed(3)) // 附带精确到毫秒的时间
+        selection_time: parseFloat(finalTime.toFixed(3)) 
     };
 
     try {
