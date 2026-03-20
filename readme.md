@@ -1,5 +1,7 @@
 Code Prototype Explanation
 
+GitHub Address: https://github.com/Suizil/HCS-Password-System.git
+
 Operation Steps:
 
 1. Requires FastAPI, Uvicorn, and SQLAlchemy. Installation command: "pip install fastapi uvicorn sqlalchemy pydantic"
